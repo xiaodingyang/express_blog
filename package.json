@@ -1,0 +1,30 @@
+{
+  "name": "project",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon ./bin/www",
+    "prd": "cross-env NODE_ENV=production pm2 start ./bin/www",
+    "stop": "cross-env NODE_ENV=production pm2 stop",
+    "restart": "cross-env NODE_ENV=production pm2 restart all"
+  },
+  "dependencies": {
+    "connect-redis": "^3.4.2",
+    "cookie-parser": "~1.4.4",
+    "cookies": "^0.7.3",
+    "cross-env": "^5.2.0",
+    "crypto": "^1.0.1",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "express-session": "^1.16.2",
+    "http-errors": "~1.6.3",
+    "jade": "^1.11.0",
+    "moment": "^2.24.0",
+    "morgan": "~1.9.1",
+    "mysql": "^2.17.1",
+    "nodemon": "^1.19.1",
+    "redis": "^2.8.0",
+    "svg-captcha": "^1.4.0",
+    "xss": "^1.0.6"
+  }
+}
