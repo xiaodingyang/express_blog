@@ -6,9 +6,8 @@ const {
     login, getUserInfo, updateUser, newUser, deleteUser, isRepeat
 } = require('../control/user')
 const xss = require('xss')
-router.post('/login', function (req, res, next) {
-    console.log('sssssssssssss');
 
+router.post('/login', function (req, res, next) {
     const identifying = req.body.identifying
     // if (!(req.body.username && req.body.password && identifying)) {
     if (!(req.body.username && req.body.password)) {
@@ -43,12 +42,9 @@ router.post('/login', function (req, res, next) {
         }
         res.json(new resModels({ data: [], message: '用户名或密码错误！', status: 403 }))
     })
-
 });
 /* 验证码 */
 router.get('/captcha', function (req, res, next) {
-    console.log('qqqqqqqqqqqqq');
-    
     const cap = svgCaptcha.create({
         // 翻转颜色
         inverse: false,
@@ -122,5 +118,6 @@ router.post('/update', function (req, res, next) {
         })
     }
 });
+
 
 module.exports = router;

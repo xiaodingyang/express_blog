@@ -50,13 +50,11 @@ const updateUser = ({ id, username, password, realname, auth, phone, email, addr
     return exec(sql)
 }
 
-
-
 module.exports = {
     login,
     getUserInfo,
     newUser,
     updateUser,
     deleteUser,
-    isRepeat
+    isRepeat,
 }
