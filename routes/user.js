@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const svgCaptcha = require("svg-captcha");
+const { createToken, checkToken } = require("../utils/token");
 const resModels = require("../model/resModels");
 const {
   login,
@@ -13,46 +14,50 @@ const {
 const xss = require("xss");
 
 router.post("/login", function (req, res, next) {
-  const identifying = req.body.identifying;
-  // if (!(req.body.username && req.body.password && identifying)) {
-  if (!(req.body.username && req.body.password)) {
+  const identifying = xss(req.body.identifying);
+  const password = xss(req.body.password);
+  const username = xss(req.body.username);
+  if (!(username && password && identifying)) {
     res.json(
-      new resModels({ data: [], message: "用户名或密码错误！", status: 403 })
+      new resModels({
+        data: [],
+        message: "请填写用户名或秘密或验证码！",
+        status: 403,
+      })
     );
     return;
   }
-  login(req.body.username, req.body.password).then((data) => {
-    req.body.username = xss(req.body.username);
-    req.body.password = xss(req.body.password);
-
-    if (data && data.username) {
-      if (identifying === req.session.captcha) {
-        req.session.userId = data.id;
-        req.session.username = data.username;
-        req.session.realname = data.realname;
-        req.session.auth = data.auth;
-
+  if (identifying === req.session.captcha) {
+    login(username, password).then((data) => {
+      if (data && data.username) {
+        const token = createToken(data);
         // 向客户端设置一个Cookie
         const userInfo = {
-          id: req.session.id,
-          username: req.session.username,
-          realname: req.session.realname,
-          auth: req.session.auth,
+          ...data,
+          token,
         };
-        res.cookie("userInfo", JSON.stringify(userInfo));
         res.json(
-          new resModels({ data: userInfo, message: "登录成功！", status: 200 })
+          new resModels({
+            data: userInfo,
+            message: "登录成功！",
+            status: 200,
+          })
         );
         return;
       } else {
-        res.json(new resModels({ message: "验证码错误！", status: 2 }));
-        return;
+        res.json(
+          new resModels({
+            data: [],
+            message: "用户名或密码错误！",
+            status: 403,
+          })
+        );
       }
-    }
-    res.json(
-      new resModels({ data: [], message: "用户名或密码错误！", status: 403 })
-    );
-  });
+    });
+  } else {
+    res.json(new resModels({ message: "验证码错误！", status: 2 }));
+    return;
+  }
 });
 /* 验证码 */
 router.get("/captcha", function (req, res, next) {

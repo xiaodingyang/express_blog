@@ -1,70 +1,32 @@
 var crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const ResModels = require("../model/resModels");
+
+// 密钥
+const secret = "secret";
 var token = {
-  createToken: function (obj, timeout) {
-    console.log(parseInt(timeout) || 0);
-    var obj2 = {
-      data: obj, //payload
-      created: parseInt(Date.now() / 1000), //token生成的时间的，单位秒
-      exp: parseInt(timeout) || 10, //token有效期
-    };
-
-    //payload信息
-    var base64Str = Buffer.from(JSON.stringify(obj2), "utf8").toString(
-      "base64"
-    );
-
-    //添加签名，防篡改
-    var secret = "hel.h-five.com";
-    var hash = crypto.createHmac("sha256", secret);
-    hash.update(base64Str);
-    var signature = hash.digest("base64");
-
-    return base64Str + "." + signature;
+  createToken: function (data) {
+    // Token 数据
+    const payload = data;
+    // 签发 Token
+    const token = jwt.sign({ ...payload }, secret, { expiresIn: 24 * 3600 }); // exporesIn为过期时间，单位：ms/h/days/d  eg:1000, "2 days", "10h", "7d"
+    return token;
   },
-  decodeToken: function (token) {
-    var decArr = token.split(".");
-    if (decArr.length < 2) {
-      //token不合法
-      return false;
-    }
-
-    var payload = {};
-    //将payload json字符串 解析为对象
-    try {
-      payload = JSON.parse(Buffer.from(decArr[0], "base64").toString("utf8"));
-    } catch (e) {
-      return false;
-    }
-
-    //检验签名
-    var secret = "hel.h-five.com";
-    var hash = crypto.createHmac("sha256", secret);
-    hash.update(decArr[0]);
-    var checkSignature = hash.digest("base64");
-
-    return {
-      payload: payload,
-      signature: decArr[1],
-      checkSignature: checkSignature,
-    };
-  },
-  checkToken: function (token) {
-    var resDecode = this.decodeToken(token);
-    if (!resDecode) {
-      return false;
-    }
-
-    //是否过期
-    var expState =
-      parseInt(Date.now() / 1000) - parseInt(resDecode.payload.created) >
-      parseInt(resDecode.payload.exp)
-        ? false
-        : true;
-    if (resDecode.signature === resDecode.checkSignature && expState) {
-      return true;
-    }
-
-    return false;
+  checkToken: function (token, res, next) {
+    // 验证 Token 把要验证的 Token 数据，还有签发这个 Token 的时候用的那个密钥告诉 verify 这个方法，在一个回调里面有两个参数，error 表示错误，decoded 是解码之后的 Token 数据。
+    jwt.verify(token, secret, (error, decoded) => {
+      if (error) {
+        if (error.name === "JsonWebTokenError") {
+          res.json(new ResModels({ message: "无效的token", status: 403 }));
+          return;
+        }
+        if (error.name === "TokenExpiredError") {
+          res.json(new ResModels({ message: "token已过期", status: 403 }));
+          return;
+        }
+      }
+      next();
+    });
   },
 };
 module.exports = exports = token;
