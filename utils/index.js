@@ -1,4 +1,6 @@
 const resModels = require("../model/resModels");
+const xss = require("xss");
+
 // 对象数组转为字符串
 function setObjToStr(arr) {
   if (arr && arr !== "undefined" && Array.isArray(arr)) {
@@ -14,7 +16,13 @@ function getStrToObj(str) {
     const arr = str.split("xdy");
     return arr.length > 0
       ? arr.map((item) => {
-          if (item) return JSON.parse(item);
+          if (typeof item == "string") {
+            try {
+              if (item) return JSON.parse(item);
+            } catch (e) {
+              return false;
+            }
+          }
         })
       : "";
   }
@@ -22,6 +30,9 @@ function getStrToObj(str) {
 
 // 获取列表函数
 function getListFun(func, req, res, dataRest) {
+  for (const key in req.query) {
+    req.query[key] = xss(req.query[key]);
+  }
   func(req.query)
     .then((data) => {
       if (data) {
@@ -37,7 +48,7 @@ function getListFun(func, req, res, dataRest) {
 // 更新函数
 function updateFun(func, req, res, dataRest) {
   req.body.realname = req.session.realname ? req.session.username : "";
-  req.body = dataRest ? dataRest(req.body) : req.body;
+  req.body = dataRest ? dataRest(req.body) : xss(req.body[key]);
   func(req.body)
     .then((data) => {
       if (data) {

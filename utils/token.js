@@ -1,4 +1,3 @@
-var crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const ResModels = require("../model/resModels");
 
@@ -6,7 +5,7 @@ const ResModels = require("../model/resModels");
 const secret = "secret";
 var token = {
   createToken: function (data) {
-    // Token 数据
+    // Token 数据 data为自定义数据，我这里data为用户登录信息
     const payload = data;
     // 签发 Token
     const token = jwt.sign({ ...payload }, secret, { expiresIn: 24 * 3600 }); // exporesIn为过期时间，单位：ms/h/days/d  eg:1000, "2 days", "10h", "7d"

@@ -1,7 +1,5 @@
 var express = require("express");
 var router = express.Router();
-const svgCaptcha = require("svg-captcha");
-// const resModels = require("../model/resModels");
 const { getListFun, updateFun, delFun } = require("../utils/index");
 const {
   getResumeBase,

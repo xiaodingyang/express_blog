@@ -1,6 +1,5 @@
 var createError = require("http-errors");
 var express = require("express");
-var path = require("path");
 var cookieParser = require("cookie-parser"); // 使用 cookieParser 解析cookie
 var logger = require("morgan"); // 生成日志
 const session = require("express-session");

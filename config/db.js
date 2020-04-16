@@ -3,7 +3,6 @@ const env = process.env.NODE_ENV; // 环境参数
 
 let MYSQL_CONFIG;
 let REDIS_CONFIG;
-let CRS;
 let PORT;
 if (env === "development") {
   PORT = 8001;
