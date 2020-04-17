@@ -6,12 +6,14 @@ const resModels = require("../model/resModels");
 const {
   login,
   getUserInfo,
-  updateUser,
   newUser,
   deleteUser,
   isRepeat,
+  resetPassword,
 } = require("../control/user");
 const xss = require("xss");
+const { getListFun, updateFun, delFun } = require("../utils/index");
+const { getStrToObj, setObjToStr } = require("../utils/index");
 
 router.post("/login", function (req, res, next) {
   const identifying = xss(req.body.identifying);
@@ -28,7 +30,7 @@ router.post("/login", function (req, res, next) {
     return;
   }
   if (identifying === req.session.captcha) {
-    login(username, password).then((data) => {
+    login(username, password, req).then((data) => {
       if (data && data.username) {
         const token = createToken(data);
         // 向客户端设置一个Cookie
@@ -85,73 +87,77 @@ router.get("/captcha", function (req, res, next) {
 
 /* 获取用户列表 */
 router.get("/list", function (req, res, next) {
-  getUserInfo(req.query).then((data) => {
-    if (data) {
-      res.json(new resModels({ data: data, status: 200, message: "OK！" }));
-    }
+  getListFun(getUserInfo, req, res, (data) => {
+    data = data.map((item) => {
+      item.headImg = getStrToObj(item.headImg);
+      return item;
+    });
+    return data;
   });
 });
-/* 新增用户 */
-router.post("/new", function (req, res, next) {
-  if (req.session.auth === 1) {
-    isRepeat(req.body.username)
-      .then((data) => {
-        if (data.length > 0) {
-          res.json(
-            new resModels({ data: [], message: "该用户已存在", status: 403 })
-          );
+/* 更新用户 */
+router.post("/save", function (req, res, next) {
+  if (req.body.id) {
+    updateFun(newUser, req, res, (data) => {
+      for (const key in data) {
+        if (key === "headImg") {
+          data.headImg = setObjToStr(data.headImg);
         } else {
-          newUser(req.body)
-            .then((data) => {
-              res.json(new resModels({ data, status: 200, message: "OK!" }));
-            })
-            .catch((err) => console.log(err));
+          data[key] = xss(data[key]);
         }
-      })
-      .catch((err) => console.log(err));
-  } else {
-    res.json(new resModels({ data: [], status: 403, message: "权限不足！" }));
+      }
+      return data;
+    });
+    return;
   }
+  isRepeat(req.body.username)
+    .then((data) => {
+      if (data.length > 0) {
+        res.json(
+          new resModels({ data: [], message: "该用户已存在", status: 403 })
+        );
+      } else {
+        updateFun(newUser, req, res, (data) => {
+          for (const key in data) {
+            if (key === "headImg") {
+              data.headImg = setObjToStr(data.headImg);
+            } else {
+              data[key] = xss(data[key]);
+            }
+          }
+          return data;
+        });
+      }
+    })
+    .catch((err) => console.log(err));
 });
 
 /* 删除用户 */
 router.post("/delete", function (req, res, next) {
-  if (req.session.auth === 1) {
-    if (req.body.id.indexOf(req.session.userId) > -1) {
-      res.json(
-        new resModels({
-          data: [],
-          message: "不能删除自己的账号！",
-          status: 403,
-        })
-      );
-    } else {
-      deleteUser(req.body.id)
-        .then((data) => {
-          res.json(new resModels({ data, status: 200, message: "OK!" }));
-        })
-        .catch((err) =>
-          res.json(new resModels({ message: "参数不匹配！", status: 400 }))
-        );
-    }
-  } else {
-    res.json(new resModels({ data: [], status: 403, message: "权限不足！" }));
-  }
-});
-
-/* 编辑用户 */
-router.post("/update", function (req, res, next) {
-  if (req.session.auth === 1) {
-    updateUser(req.body)
-      .then((data) => {
-        res.json(new resModels({ data, status: 200, message: "OK!" }));
+  if (req.body.id === req.session.userInfo.id) {
+    res.json(
+      new resModels({
+        data: [],
+        message: "不能删除自己的账号！",
+        status: 403,
       })
-      .catch((err) => {
-        res.json(
-          new resModels({ data: err, message: "参数不匹配！", status: 400 })
-        );
-      });
+    );
+  } else {
+    delFun(deleteUser, req, res);
   }
 });
-
+/* 获取密码 */
+router.post("/password/list", function (req, res, next) {
+  res.json(
+    new resModels({
+      data: req.session.userInfo,
+      message: "OK!",
+      status: 200,
+    })
+  );
+});
+/* 修改密码 */
+router.post("/password/save", function (req, res, next) {
+  updateFun(resetPassword, req, res);
+});
 module.exports = router;

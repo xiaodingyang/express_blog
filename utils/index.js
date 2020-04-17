@@ -8,6 +8,8 @@ function setObjToStr(arr) {
       return JSON.stringify(item);
     });
     return str.join("xdy");
+  } else {
+    return [];
   }
 }
 // 对象数组类型字符串转为对象数组
@@ -25,6 +27,8 @@ function getStrToObj(str) {
           }
         })
       : "";
+  } else {
+    return "";
   }
 }
 
@@ -47,9 +51,14 @@ function getListFun(func, req, res, dataRest) {
 }
 // 更新函数
 function updateFun(func, req, res, dataRest) {
-  req.body.realname = req.session.realname ? req.session.username : "";
-  req.body = dataRest ? dataRest(req.body) : xss(req.body[key]);
-  func(req.body)
+  if (dataRest) {
+    req.body = dataRest(req.body);
+  } else {
+    for (const key in req.body) {
+      req.body[key] = xss(req.body[key]);
+    }
+  }
+  func(req.body, req)
     .then((data) => {
       if (data) {
         res.json(new resModels({ data: [], status: 200, message: "OK！" }));
@@ -62,7 +71,7 @@ function updateFun(func, req, res, dataRest) {
 }
 // 删除函数
 function delFun(func, req, res) {
-  func(req.body.id, req.session.realname)
+  func(req.body.id)
     .then((data) => {
       res.json(new resModels({ data: [], status: 200, message: "OK!" }));
     })

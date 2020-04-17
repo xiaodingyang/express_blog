@@ -1,60 +1,70 @@
-const {
-    exec
-} = require('../db/mysql')
+const { exec } = require("../db/mysql");
 
-const {
-    genPassword
-} = require('../utils/crypto')
+const { genPassword } = require("../utils/crypto");
 
-const login = (username = '', password = '') => {
-    password = genPassword(password)
-    const sql = `select id,username,realname,auth from users where username='${username}' and password='${password}'`
-    return exec(sql).then(data => data[0] || {})
-}
+const login = (username = "", password = "", req) => {
+  password = genPassword(password);
+  console.log("ddd", password);
+
+  const sql = `select id,username,realname,auth from users where username='${username}' and password='${password}'`;
+  return exec(sql).then((data) => {
+    if (data && data[0]) {
+      req.session.userInfo = {
+        userId: data[0].id,
+        username: data[0].username,
+        password: password,
+        realname: data[0].realname,
+        auth: data[0].auth,
+      };
+    }
+    return data[0] || {};
+  });
+};
 
 /* 获取用户列表 */
 const getUserInfo = ({ username, realname, auth }) => {
-    let sql = `select * from users where 1=1 `
-    if (username) sql += `and username like '%${username}%' `
-    if (realname) sql += `and realname like '%${realname}%' `
-    if (auth) sql += `and auth = '${realname}'`
-    return exec(sql)
-}
+  let sql = `select * from users where 1=1 `;
+  if (username) sql += `and username like '%${username}%' `;
+  if (realname) sql += `and realname like '%${realname}%' `;
+  if (auth) sql += `and auth = '${auth}'`;
+  return exec(sql);
+};
 
 /* 查重 */
 const isRepeat = (username) => {
-    let sql = `select * from users where username = '${username}'`
-    return exec(sql)
-}
-
+  let sql = `select * from users where username = '${username}'`;
+  return exec(sql);
+};
 
 /* 新增用户 */
-const newUser = ({ username, password, realname, auth, phone, email, address, age }) => {
-    password = genPassword(password)
-    let sql = `insert into users(username, password, realname, auth, phone, email, address, age) values ('${username}', '${password}', '${realname}', '${auth}', '${phone}', '${email}', '${address}', '${age}');`
-
-    return exec(sql)
-}
+const newUser = ({ id, username, password, realname, auth, headImg = "" }) => {
+  password = genPassword(password);
+  let sql = "";
+  if (id) {
+    sql = `update users set username='${username}' , auth='${auth}' , headImg='${headImg}' , realname='${realname}' where id='${id}';`;
+  } else {
+    sql = `insert into users(username, password, realname, auth, headImg) values ('${username}', '${password}', '${realname}', '${auth}', '${headImg}');`;
+  }
+  return exec(sql);
+};
 /* 删除用户 */
 const deleteUser = (id) => {
-    const sql = `delete from users where id in(${id});`
-    return exec(sql)
-}
-/* 编辑用户 */
-const updateUser = ({ id, username, password, realname, auth, phone, email, address, age }) => {
+  const sql = `delete from users where id in(${id});`;
+  return exec(sql);
+};
 
-    password = genPassword(password)
-    const sql = `update users set \`password\`='${password}' username='${username}' and realname='${realname}' and auth='${auth}' and phone='${phone}' and email='${email}' and address='${address}' and age='${age}'  where id='${id}';`
-    console.log(sql);
-
-    return exec(sql)
-}
+// 修改密码
+const resetPassword = ({ password }, req) => {
+  password = genPassword(password);
+  sql = `update users set password='${password}' where id='${req.session.userInfo.userId}';`;
+  return exec(sql);
+};
 
 module.exports = {
-    login,
-    getUserInfo,
-    newUser,
-    updateUser,
-    deleteUser,
-    isRepeat,
-}
+  login,
+  getUserInfo,
+  newUser,
+  deleteUser,
+  isRepeat,
+  resetPassword,
+};
