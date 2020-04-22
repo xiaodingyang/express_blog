@@ -4,9 +4,7 @@ const { genPassword } = require("../utils/crypto");
 
 const login = (username = "", password = "", req) => {
   password = genPassword(password);
-  console.log("ddd", password);
-
-  const sql = `select id,username,realname,auth from users where username='${username}' and password='${password}'`;
+  const sql = `select id,username,realname,auth,headImg from users where username='${username}' and password='${password}'`;
   return exec(sql).then((data) => {
     if (data && data[0]) {
       req.session.userInfo = {
@@ -14,6 +12,7 @@ const login = (username = "", password = "", req) => {
         username: data[0].username,
         password: password,
         realname: data[0].realname,
+        headImg: data[0].headImg,
         auth: data[0].auth,
       };
     }

@@ -1,8 +1,10 @@
 const { exec } = require("../db/mysql");
 const xss = require("xss");
 
-const getList = () => {
+const getList = ({ imgKey, description }) => {
   let sql = "select * from imgs where 1=1 ";
+  if (imgKey) sql += `and imgKey like '%${imgKey}%' `;
+  if (description) sql += `and imgKey like '%${description}%' `;
   return exec(sql);
 };
 

@@ -4,6 +4,7 @@ const { getListFun, updateFun, delFun } = require("../utils/index");
 const { getList, newBlog, updateBlog, delBlog } = require("../control/blog");
 const xss = require("xss");
 const { getStrToObj, setObjToStr } = require("../utils/index");
+const resModels = require("../model/resModels");
 
 // 获取博客
 router.get("/list", function (req, res, next) {
@@ -27,6 +28,7 @@ router.post("/save", function (req, res, next) {
         data[key] = xss(data[key]);
       }
     }
+    data.author = req.session.userInfo.realname;
     return data;
   });
 });
@@ -36,4 +38,7 @@ router.post("/delete", function (req, res, next) {
   delFun(delBlog, req, res);
 });
 
+router.post("/upload", function (req, res, next) {
+  res.json(new resModels({ data: [], status: 200, message: "OK！" }));
+});
 module.exports = router;

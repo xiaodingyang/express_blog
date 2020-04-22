@@ -64,7 +64,7 @@ router.post("/experience/save", function (req, res, next) {
 
 // 删除经验
 router.post("/experience/delete", function (req, res, next) {
-  delFun(delResumeEx, req);
+  delFun(delResumeEx, req, res);
 });
 
 module.exports = router;

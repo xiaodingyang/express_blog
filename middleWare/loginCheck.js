@@ -1,8 +1,12 @@
 const { checkToken } = require("../utils/token");
 
 module.exports = (req, res, next) => {
-  const notCheckApi = ["/api/user/captcha", "/api/user/login"]; // token白名单（无需token验证的api）
-  const isNext = notCheckApi.find((item) => item === req.url);
+  const notCheckApi = [
+    "/api/user/captcha",
+    "/api/user/login",
+    "/api/blog/upload",
+  ]; // token白名单（无需token验证的api）
+  const isNext = notCheckApi.find((item) => req.url.includes(item));
   if (isNext) {
     next();
     return;
