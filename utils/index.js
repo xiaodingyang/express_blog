@@ -40,8 +40,17 @@ function getListFun(func, req, res, dataRest) {
   func(req.query)
     .then((data) => {
       if (data) {
-        dataRest && dataRest(data);
-        res.json(new resModels({ data: data, status: 200, message: "OK！" }));
+        dataRest && dataRest(data.data);
+        res.json(
+          new resModels({
+            data: data.data,
+            total: data.total,
+            currentPage: data.currentPage,
+            pageSize: data.pageSize,
+            status: 200,
+            message: "OK！",
+          })
+        );
       }
     })
     .catch((err) => {

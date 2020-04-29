@@ -29,7 +29,7 @@ router.post("/login", function (req, res, next) {
     );
     return;
   }
-  if (identifying === req.session.captcha) {
+  if (identifying.toLowerCase() === req.session.captcha) {
     login(username, password, req).then((data) => {
       if (data && data.username) {
         const token = createToken(data);
@@ -57,7 +57,7 @@ router.post("/login", function (req, res, next) {
       }
     });
   } else {
-    res.json(new resModels({ message: "验证码错误！", status: 2 }));
+    res.json(new resModels({ message: "验证码错误！", status: 403 }));
     return;
   }
 });

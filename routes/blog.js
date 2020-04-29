@@ -10,6 +10,7 @@ const resModels = require("../model/resModels");
 router.get("/list", function (req, res, next) {
   getListFun(getList, req, res, (data) => {
     data = data.map((item) => {
+      item.title = unescape(item.title);
       item.content = unescape(item.content);
       item.description = unescape(item.description);
       item.src = getStrToObj(item.src);
@@ -22,10 +23,21 @@ router.get("/list", function (req, res, next) {
 router.post("/save", function (req, res, next) {
   updateFun(updateBlog, req, res, (data) => {
     for (const key in data) {
-      if (key === "src") {
-        data.src = setObjToStr(data.src);
-      } else {
-        data[key] = xss(data[key]);
+      switch (key) {
+        case "src":
+          data.src = setObjToStr(data.src);
+          break;
+        case "title":
+          data.title = escape(data.title);
+          break;
+        case "content":
+          data.content = escape(data.content);
+          break;
+        case "description":
+          data.description = escape(data.description);
+          break;
+        default:
+          data[key] = xss(data[key]);
       }
     }
     data.author = req.session.userInfo.realname;

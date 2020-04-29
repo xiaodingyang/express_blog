@@ -1,8 +1,14 @@
-const { exec } = require("../db/mysql");
-const getList = ({ name }) => {
-  let sql = "select * from blogsclass where 1=1 ";
-  if (name) sql += `and name='${name}' `;
-  return exec(sql);
+const { exec, setSql } = require("../db/mysql");
+const getList = ({ name, currentPage, pageSize }) => {
+  const params = {
+    name: "blogsclass",
+    likeSearch: {
+      name,
+    },
+    currentPage,
+    pageSize,
+  };
+  return setSql(params);
 };
 
 const newClass = ({ code, name }) => {

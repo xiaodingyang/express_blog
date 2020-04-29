@@ -1,8 +1,14 @@
 var express = require("express");
 var router = express.Router();
 const { getList, newImgs, delImgs } = require("../control/imgs");
-const { getStrToObj, setObjToStr } = require("../utils/index");
-const { getListFun, updateFun, delFun } = require("../utils/index");
+const {
+  getStrToObj,
+  setObjToStr,
+  getListFun,
+  updateFun,
+  delFun,
+} = require("../utils/index");
+// const {  } = require("../utils/index");
 
 const ResModels = require("../model/resModels");
 const xss = require("xss");
