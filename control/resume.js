@@ -1,9 +1,15 @@
-const { exec } = require("../db/mysql");
+const { exec, setSql } = require("../db/mysql");
 
 /* 获取基础简历 */
-const getResumeBase = () => {
-  let sql = `select * from resumebase where 1=1 `;
-  return exec(sql);
+const getResumeBase = ({ currentPage, pageSize }) => {
+  const params = {
+    name: "resumebase",
+    search: {},
+    likeSearch: {},
+    currentPage,
+    pageSize,
+  };
+  return setSql(params);
 };
 /* 删除基础简历 */
 const delResumeBase = (id = "") => {
@@ -38,10 +44,15 @@ const updateResumeBase = ({
 };
 
 /* 获取经验 */
-const getResumeEx = ({ companyName }) => {
-  let sql = `select * from resumeex where 1=1 `;
-  if (companyName) sql += `and companyName like '%${companyName}%' `;
-  return exec(sql);
+const getResumeEx = ({ companyName, currentPage, pageSize }) => {
+  const params = {
+    name: "resumeex",
+    search: {},
+    likeSearch: { companyName },
+    currentPage,
+    pageSize,
+  };
+  return setSql(params);
 };
 /* 删除经验 */
 const delResumeEx = (id = "") => {

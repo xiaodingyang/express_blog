@@ -1,5 +1,4 @@
-const { exec } = require("../db/mysql");
-
+const { exec, setSql } = require("../db/mysql");
 const { genPassword } = require("../utils/crypto");
 
 const login = (username = "", password = "", req) => {
@@ -21,12 +20,20 @@ const login = (username = "", password = "", req) => {
 };
 
 /* 获取用户列表 */
-const getUserInfo = ({ username, realname, auth }) => {
-  let sql = `select * from users where 1=1 `;
-  if (username) sql += `and username like '%${username}%' `;
-  if (realname) sql += `and realname like '%${realname}%' `;
-  if (auth) sql += `and auth = '${auth}'`;
-  return exec(sql);
+const getUserInfo = ({ username, realname, auth, currentPage, pageSize }) => {
+  const params = {
+    name: "users",
+    search: {
+      auth,
+    },
+    likeSearch: {
+      username,
+      realname,
+    },
+    currentPage,
+    pageSize,
+  };
+  return setSql(params);
 };
 
 /* 查重 */
