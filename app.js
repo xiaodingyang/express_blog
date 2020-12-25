@@ -10,6 +10,7 @@ var userRouter = require("./routes/user");
 var blogClassRouter = require("./routes/blogClass");
 var imgsRouter = require("./routes/imgs");
 var resumeRouter = require("./routes/resume");
+var menuRouter = require("./routes/menu");
 var loginCheck = require("./middleWare/loginCheck");
 app.set("view engine", "ejs");
 //解决跨域
@@ -34,7 +35,6 @@ const { redisClient } = require("./db/redis");
 const sessionStore = new RedisStore({
   client: redisClient,
 });
-
 app.use(
   session({
     secret: "XiaoDingYang",
@@ -69,6 +69,7 @@ app.use("/api/user", userRouter);
 app.use("/api/blogClass", blogClassRouter);
 app.use("/api/imgs", imgsRouter);
 app.use("/api/resume", resumeRouter);
+app.use("/api/menu", menuRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

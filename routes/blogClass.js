@@ -23,11 +23,11 @@ router.post("/new", function (req, res, next) {
   }
   newClass(req.body)
     .then((data) => {
-      res.json(new ResModels({ data, status: 200, message: "OK!" }));
+      res.json(new ResModels({ data, status: true, message: "OK!" }));
     })
     .catch((err) =>
       res.json(
-        new ResModels({ data: [], message: "参数不匹配！", status: 400 })
+        new ResModels({ data: [], message: "参数不匹配！", status: false })
       )
     );
 });

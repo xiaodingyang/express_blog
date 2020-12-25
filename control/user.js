@@ -20,7 +20,7 @@ const login = (username = "", password = "", req) => {
 };
 
 /* 获取用户列表 */
-const getUserInfo = ({ username, realname, auth, currentPage, pageSize }) => {
+const getUserInfo = ({ username, realname, auth, currentPage=1, pageSize=10 }) => {
   const params = {
     name: "users",
     search: {
@@ -43,13 +43,13 @@ const isRepeat = (username) => {
 };
 
 /* 新增用户 */
-const newUser = ({ id, username, password, realname, auth, headImg = "" }) => {
+const newUser = ({ id, username, password, realname, auth, headImg = "",nav }) => {
   password = genPassword(password);
   let sql = "";
   if (id) {
-    sql = `update users set username='${username}' , auth='${auth}' , headImg='${headImg}' , realname='${realname}' where id='${id}';`;
+    sql = `update users set username='${username}' , auth='${auth}' , headImg='${headImg}' , realname='${realname}', nav='${nav}' where id='${id}';`;
   } else {
-    sql = `insert into users(username, password, realname, auth, headImg) values ('${username}', '${password}', '${realname}', '${auth}', '${headImg}');`;
+    sql = `insert into users(username, password, realname, auth, headImg,nav) values ('${username}', '${password}', '${realname}', '${auth}', '${headImg}','${nav}');`;
   }
   return exec(sql);
 };

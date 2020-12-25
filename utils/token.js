@@ -16,11 +16,11 @@ var token = {
     jwt.verify(token, secret, (error, decoded) => {
       if (error) {
         if (error.name === "JsonWebTokenError") {
-          res.json(new ResModels({ message: "无效的token", status: 403 }));
+          res.json(new ResModels({ message: "无效的token", status: false }));
           return;
         }
         if (error.name === "TokenExpiredError") {
-          res.json(new ResModels({ message: "token已过期", status: 403 }));
+          res.json(new ResModels({ message: "token已过期", status: false }));
           return;
         }
       }

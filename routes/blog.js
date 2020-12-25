@@ -51,6 +51,6 @@ router.post("/delete", function (req, res, next) {
 });
 
 router.post("/upload", function (req, res, next) {
-  res.json(new resModels({ data: [], status: 200, message: "OK！" }));
+  res.json(new resModels({ data: [], status: true, message: "OK！" }));
 });
 module.exports = router;

@@ -21,7 +21,7 @@ if (env === "development") {
 } else {
   PORT = 8000;
   MYSQL_CONFIG = {
-    host: "118.25.22.74",
+    host: "localhost",
     user: "root",
     password: "2691716451Yang",
     port: "3306",
@@ -33,6 +33,7 @@ if (env === "development") {
     host: "127.0.0.1",
   };
 }
+// 启动redis     redis-server.exe redis.windows.conf
 module.exports = {
   MYSQL_CONFIG,
   REDIS_CONFIG,
