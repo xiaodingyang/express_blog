@@ -9,6 +9,8 @@ const getMenuList = ({ name, label, currentPage=1, pageSize=10 }) => {
       name,
       label,
     },
+    order:'asc',
+    orderKey:'sort',
     currentPage,
     pageSize,
   };
@@ -18,6 +20,8 @@ const getMenuList = ({ name, label, currentPage=1, pageSize=10 }) => {
 const getMenu = ({ label }) => {
   const params = {
     name: "menu",
+    order:'asc',
+    orderKey:'sort',
     likeSearch: {
       label,
     },
@@ -26,8 +30,8 @@ const getMenu = ({ label }) => {
 };
 
 /* 更新菜单 */
-const newMenu = ({ id,parentId,path,name,icon,label,auth,type  }) => {
-    const data = { id,parentId,path,name,icon,label,auth,type  }
+const newMenu = ({ id,parentId,path,name,icon,label,auth,type,sort,component  }) => {
+    const data = { id,parentId,path,name,icon,label,auth,type,sort,component  }
     let key = '',val = '',str = ''
       for (const k in data) {
          if(data[k]!==undefined){
@@ -47,7 +51,7 @@ const newMenu = ({ id,parentId,path,name,icon,label,auth,type  }) => {
   }
   return exec(sql);
 };
-// /* 删除用户 */
+// /* 删除菜单 */
 const delMenu = (id) => {
   const sql = `delete from menu where id in(${id});`;
   return exec(sql);

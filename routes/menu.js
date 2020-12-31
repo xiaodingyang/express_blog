@@ -10,7 +10,7 @@ const { getStrToObj, setObjToStr,setTree } = require('../utils/index')
 
 /* 获取菜单列表 */
 // 分页
-router.get('/treelist', function (req, res, next) {
+router.get('/list', function (req, res, next) {
 	getListFun(getMenuList, req, res, (data) => {
         return setTree(data)
 	})

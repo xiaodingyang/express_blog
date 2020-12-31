@@ -70,7 +70,7 @@ function setSql({
 }
 
 // 不分页查询
-function setNoPageSql({ name, likeSearch }) {
+function setNoPageSql({ name, likeSearch,orderKey, order}) {
 	let dataSql = `select * from ${name}  where 1=1 `
 	let str=''
 	if(likeSearch){
@@ -78,6 +78,9 @@ function setNoPageSql({ name, likeSearch }) {
             if (likeSearch[k]) str += `and ${k} like'%${likeSearch[k]}%' `
         }
     }
+    if (orderKey) {
+		str += ` order by ${orderKey} ${order || 'desc'} `
+	}
     dataSql += str
 	return exec(dataSql).then((data) => {
 		return {

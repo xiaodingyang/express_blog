@@ -19,16 +19,7 @@ router.post('/login', function (req, res, next) {
 	const identifying = xss(req.body.identifying)
 	const password = xss(req.body.password)
 	const username = xss(req.body.username)
-	// if (!(username && password && identifying)) {
-	// 	res.json(
-	// 		new resModels({
-	// 			data: null,
-	// 			message: '请填写完整登录信息！',
-	// 			status: false,
-	// 		})
-	// 	)
-	// 	return
-	// }
+
 	login(username, password, req).then((data) => {
 		if (data && data.username) {
 			const token = createToken(data)
@@ -37,7 +28,7 @@ router.post('/login', function (req, res, next) {
 				...data,
 				token,
 			}
-			// if (identifying.toLowerCase() === req.session.captcha) {
+			if (identifying.toLowerCase() === req.session.captcha) {
 				res.json(
 					new resModels({
 						data: userInfo,
@@ -45,12 +36,12 @@ router.post('/login', function (req, res, next) {
 						status: true,
 					})
 				)
-			// } else {
-			// 	res.json(
-			// 		new resModels({ message: '验证码错误！', status: false })
-			// 	)
-			// 	return
-			// }
+			} else {
+				res.json(
+					new resModels({ message: '验证码错误！', status: false })
+				)
+				return
+			}
 
 			return
 		} else {
@@ -77,14 +68,11 @@ router.get('/captcha', function (req, res, next) {
 		width: 80,
 		// 高度
 		height: 30,
-    })
-    
-    req.session.captcha = cap.text.toLowerCase() // session 存储验证码数值 忽略大小写
+	})
+
+	req.session.captcha = cap.text.toLowerCase() // session 存储验证码数值 忽略大小写
 	res.type('image/svg+xml') // 响应的类型
-	if (cap.data)
-		res.json(
-			new resModels({ data: cap.data, status: true })
-		)
+	if (cap.data) res.json(new resModels({ data: cap.data, status: true }))
 	else
 		res.json(
 			new resModels({
@@ -94,6 +82,15 @@ router.get('/captcha', function (req, res, next) {
 		)
 })
 
+/* 获取用户信息 */
+router.get('/info', function (req, res, next) {
+    if(req.session.userInfo){
+        res.json(new resModels({ data: req.session.userInfo, status: true }))
+    }else{
+        res.json(new resModels({ message: '用户信息获取失败！', status: false }))
+    }
+	
+})
 /* 获取用户列表 */
 router.get('/list', function (req, res, next) {
 	getListFun(getUserInfo, req, res, (data) => {
@@ -124,9 +121,8 @@ router.post('/save', function (req, res, next) {
 			if (data.length > 0) {
 				res.json(
 					new resModels({
-						data: [],
 						message: '该用户已存在',
-						status: 403,
+						status: false,
 					})
 				)
 			} else {
@@ -150,7 +146,6 @@ router.post('/delete', function (req, res, next) {
 	if (req.body.id === req.session.userInfo.id) {
 		res.json(
 			new resModels({
-				data: [],
 				message: '不能删除自己的账号！',
 				status: false,
 			})
