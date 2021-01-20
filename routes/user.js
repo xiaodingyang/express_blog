@@ -19,6 +19,7 @@ router.post('/login', function (req, res, next) {
 	const identifying = xss(req.body.identifying)
 	const password = xss(req.body.password)
 	const username = xss(req.body.username)
+	// const {identifying,username,password} = req.body
 
 	login(username, password, req).then((data) => {
 		if (data && data.username) {
@@ -84,18 +85,24 @@ router.get('/captcha', function (req, res, next) {
 
 /* 获取用户信息 */
 router.get('/info', function (req, res, next) {
-    if(req.session.userInfo){
-        res.json(new resModels({ data: req.session.userInfo, status: true }))
-    }else{
-        res.json(new resModels({ message: '用户信息获取失败！', status: false }))
-    }
-	
+	if (req.session.userInfo) {
+		// for (const key in req.session.userInfo) {
+		//     if (key === 'headImg') {
+		//         req.session.userInfo.headImg = JSON.parse(unescape(req.session.userInfo.headImg))
+		//     }
+		// }
+		res.json(new resModels({ data: req.session.userInfo, status: true }))
+	} else {
+		res.json(
+			new resModels({ message: '用户信息获取失败！', status: false })
+		)
+	}
 })
 /* 获取用户列表 */
 router.get('/list', function (req, res, next) {
 	getListFun(getUserInfo, req, res, (data) => {
 		data = data.map((item) => {
-			item.headImg = getStrToObj(item.headImg)
+			item.headImg = JSON.parse(unescape(item.headImg))
 			return item
 		})
 		return data
@@ -107,7 +114,7 @@ router.post('/save', function (req, res, next) {
 		updateFun(newUser, req, res, (data) => {
 			for (const key in data) {
 				if (key === 'headImg') {
-					data.headImg = setObjToStr(data.headImg)
+					data.headImg = escape(JSON.stringify(data.headImg))
 				} else {
 					data[key] = xss(data[key])
 				}
@@ -134,6 +141,7 @@ router.post('/save', function (req, res, next) {
 							data[key] = xss(data[key])
 						}
 					}
+
 					return data
 				})
 			}
@@ -154,18 +162,18 @@ router.post('/delete', function (req, res, next) {
 		delFun(deleteUser, req, res)
 	}
 })
-/* 获取密码 */
-router.post('/password/list', function (req, res, next) {
-	res.json(
-		new resModels({
-			data: req.session.userInfo,
-			message: 'OK!',
-			status: true,
-		})
-	)
-})
-/* 修改密码 */
-router.post('/password/save', function (req, res, next) {
-	updateFun(resetPassword, req, res)
-})
+// /* 获取密码 */
+// router.get('/password', function (req, res, next) {
+// 	res.json(
+// 		new resModels({
+// 			data: req.session.userInfo.password,
+// 			message: 'OK!',
+// 			status: true,
+// 		})
+// 	)
+// })
+// /* 修改密码 */
+// router.post('/password/save', function (req, res, next) {
+// 	updateFun(resetPassword, req, res)
+// })
 module.exports = router

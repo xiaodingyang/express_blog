@@ -1,5 +1,6 @@
 const resModels = require('../model/resModels')
 const xss = require('xss')
+const { getPassword } = require('../utils/crypto')
 
 // 对象数组转为字符串
 function setObjToStr(arr) {
@@ -74,12 +75,21 @@ function updateFun(func, req, res, dataRest) {
 			req.body[key] = xss(req.body[key])
 		}
 	}
-	func(req.body, req)
+	let key = '',
+		val = '',
+		str = ''
+	for (const k in req.body) {
+		if (k === 'password') req.body[k] = getPassword(req.body[k])
+		if (req.body[k] !== 'undefined') {
+			key += ',' + k
+			val += `,"${req.body[k]}"`
+			str += `,${k}="${req.body[k]}"`
+		}
+	}
+	func({ id: req.body.id, key, val, str })
 		.then((data) => {
 			if (data) {
-				res.json(
-					new resModels({ data: [], status: true, message: 'OK！' })
-				)
+				res.json(new resModels({ status: true, message: 'OK！' }))
 			}
 		})
 		.catch((err) => {
@@ -136,6 +146,33 @@ function setTree(data) {
 	return clearTree(data.filter((item) => !item.parentId))
 }
 
+//* *************************************日期格式化**************************************************//
+function dateFormat({ time, format }) {
+	let dd = time ? new Date(time) : new Date()
+	var o = {
+		M: dd.getMonth() + 1, // 月份
+		d: dd.getDate(), // 日
+		h: dd.getHours(), // 小时
+		H: dd.getHours(), // 小时
+		m: dd.getMinutes(), // 分
+		s: dd.getSeconds(), // 秒
+	}
+	// 年，不区分大小写
+	if (/(y+)/i.test(format)) {
+		// RegExp这个对象会在我们调用了正则表达式的方法后, 自动将最近一次的结果保存在里面, 所以如果我们在使用正则表达式时, 有用到分组, 那么就可以直接在调用完以后直接使用RegExp.$xx来使用捕获到的分组内容
+		format = format.replace(RegExp.$1, dd.getFullYear())
+	}
+	for (var k in o) {
+		if (new RegExp(`(${k}+)`).test(format)) {
+			format = format.replace(
+				RegExp.$1,
+				('00' + o[k]).slice(('' + o[k]).length)
+			)
+		}
+	}
+	return format
+}
+
 module.exports = {
 	setObjToStr,
 	getStrToObj,
@@ -143,4 +180,5 @@ module.exports = {
 	updateFun,
 	delFun,
 	setTree,
+	dateFormat,
 }

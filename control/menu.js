@@ -30,24 +30,12 @@ const getMenu = ({ label }) => {
 };
 
 /* 更新菜单 */
-const newMenu = ({ id,parentId,path,name,icon,label,auth,type,sort,component  }) => {
-    const data = { id,parentId,path,name,icon,label,auth,type,sort,component  }
-    let key = '',val = '',str = ''
-      for (const k in data) {
-         if(data[k]!==undefined){
-            key+=','+k
-            val +=`,"${data[k]}"`
-            str += `,${k}="${data[k]}"`
-         }
-      }
+const newMenu = (key,val,str) => {
   let sql = "";
   if (id) {
     sql = `update menu set ${str.slice(1)} where id='${id}';`;
   } else {
-      
     sql = `insert into menu(${key.slice(1)}) values (${val.slice(1)});`;
-    console.log(sql);
-
   }
   return exec(sql);
 };

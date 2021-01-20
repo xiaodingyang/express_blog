@@ -12,6 +12,7 @@ var imgsRouter = require("./routes/imgs");
 var resumeRouter = require("./routes/resume");
 var menuRouter = require("./routes/menu");
 var loginCheck = require("./middleWare/loginCheck");
+const bodyParser = require('body-parser'); // 解析formData中间件
 app.set("view engine", "ejs");
 //解决跨域
 app.all("*", function (req, res, next) {
@@ -61,6 +62,8 @@ app.use(
 );
 app.use(cookieParser());
 app.use(loginCheck);
+app.use(bodyParser.json());//数据JSON类型
+app.use(bodyParser.urlencoded({ extended: false }));//解析post请求数据
 
 /* 注册路由，文件内部的路径为子路径，当前配置的为父路径 */
 

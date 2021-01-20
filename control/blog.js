@@ -1,5 +1,5 @@
 const { exec, setSql } = require("../db/mysql");
-const moment = require("moment");
+const {dateFormat} = require("../utils/index");
 
 const getList = ({
   id,
@@ -34,13 +34,9 @@ const getList = ({
 const updateBlog = ({ id, type, title, description, content, src, author }) => {
   let sql = "";
   if (id) {
-    sql = `update blogs set type='${type}', title='${title}', description='${description}', content='${content}', src='${src}', author='${author}', createdTime='${moment().format(
-      "YYYY-DD-MM"
-    )}' where id='${id}'`;
+    sql = `update blogs set type='${type}', title='${title}', description='${description}', content='${content}', src='${src}', author='${author}', createdTime='${dateFormat("YYYY-DD-MM")}' where id='${id}'`;
   } else {
-    sql = `insert into blogs(type, title,description, src, content, createdTime, author) values ('${type}', '${title}','${description}',   '${src}', '${content}', '${moment().format(
-      "YYYY-DD-MM"
-    )}','${author}')`;
+    sql = `insert into blogs(type, title,description, src, content, createdTime, author) values ('${type}', '${title}','${description}',   '${src}', '${content}', '${dateFormat("YYYY-DD-MM")}','${author}')`;
   }
   return exec(sql);
 };
