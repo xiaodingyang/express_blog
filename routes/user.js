@@ -3,6 +3,8 @@ var router = express.Router()
 const svgCaptcha = require('svg-captcha')
 const { createToken, checkToken } = require('../utils/token')
 const resModels = require('../model/resModels')
+const { dateFormat } = require('../utils/index')
+
 const {
 	login,
 	getUserInfo,
@@ -13,8 +15,6 @@ const {
 } = require('../control/user')
 const xss = require('xss')
 const { getListFun, updateFun, delFun } = require('../utils/index')
-const { getStrToObj, setObjToStr } = require('../utils/index')
-
 router.post('/login', function (req, res, next) {
 	const identifying = xss(req.body.identifying)
 	const password = xss(req.body.password)
@@ -86,11 +86,6 @@ router.get('/captcha', function (req, res, next) {
 /* 获取用户信息 */
 router.get('/info', function (req, res, next) {
 	if (req.session.userInfo) {
-		// for (const key in req.session.userInfo) {
-		//     if (key === 'headImg') {
-		//         req.session.userInfo.headImg = JSON.parse(unescape(req.session.userInfo.headImg))
-		//     }
-		// }
 		res.json(new resModels({ data: req.session.userInfo, status: true }))
 	} else {
 		res.json(
@@ -118,12 +113,12 @@ router.post('/save', function (req, res, next) {
 				} else {
 					data[key] = xss(data[key])
 				}
-			}
+            }
+            data.updateTime = dateFormat({ format: 'YYYY-MM-dd hh:mm:ss' })
 			return data
 		})
-		return
-	}
-	isRepeat(req.body.username)
+	}else{
+        isRepeat(req.body.username)
 		.then((data) => {
 			if (data.length > 0) {
 				res.json(
@@ -134,19 +129,22 @@ router.post('/save', function (req, res, next) {
 				)
 			} else {
 				updateFun(newUser, req, res, (data) => {
-					for (const key in data) {
-						if (key === 'headImg') {
-							data.headImg = setObjToStr(data.headImg)
-						} else {
-							data[key] = xss(data[key])
-						}
-					}
-
-					return data
-				})
+                    for (const key in data) {
+                        if (key === 'headImg') {
+                            data.headImg = escape(JSON.stringify(data.headImg))
+                        } else {
+                            data[key] = xss(data[key])
+                        }
+                    }
+                    data.createdTime = dateFormat({ format: 'YYYY-MM-dd hh:mm:ss' })
+                    data.updateTime=data.createdTime
+                    return data
+                })
 			}
 		})
 		.catch((err) => console.log(err))
+    }
+	
 })
 
 /* 删除用户 */

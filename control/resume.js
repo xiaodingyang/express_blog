@@ -19,29 +19,16 @@ const delResumeBase = (id = "") => {
   });
 };
 /* 更新基础简历 */
-const updateResumeBase = ({
-  id,
-  aboutMe,
-  expectedJob,
-  expectedAddress,
-  expectedSalary,
-  currentStatus,
-  schoolName,
-  schoolNature,
-  schoolHonou,
-  jobExperience,
-  skillLists,
-}) => {
-  let sql = "";
-  if (id) {
-    sql = `update resumebase set aboutMe='${aboutMe}', expectedJob='${expectedJob}', expectedAddress='${expectedAddress}', expectedSalary='${expectedSalary}', currentStatus='${currentStatus}', schoolName='${schoolName}', schoolNature='${schoolNature}', schoolHonou='${schoolHonou}', jobExperience='${jobExperience}', skillList='${skillLists}' where id='${id}';`;
-  } else {
-    sql = `insert into resumebase(aboutMe, expectedJob, expectedAddress, expectedSalary, currentStatus, schoolName, schoolNature, schoolHonou, jobExperience, skillList) values ('${aboutMe}', '${expectedJob}', '${expectedAddress}', '${expectedSalary}', '${currentStatus}', '${schoolName}', '${schoolNature}', '${schoolHonou}', '${jobExperience}', '${skillLists}')`;
-  }
-  return exec(sql)
-    .then((data) => data)
-    .catch((err) => err);
-};
+const updateResumeBase = ({ id, key, val, str }) => {
+	let sql = ''
+	if (id) {
+		sql = `update resumebase set ${str} where id='${id}';`
+	} else {
+		sql = `insert into resumebase(${key}) values (${val});`
+	}
+	return exec(sql)
+}
+
 
 /* 获取经验 */
 const getResumeEx = ({ companyName, currentPage, pageSize }) => {
@@ -62,19 +49,15 @@ const delResumeEx = (id = "") => {
   });
 };
 /* 更新经验 */
-const updateResumeEx = ({ id, companyName, timeList, salary, experiences }) => {
-  let sql = "";
-  const experience = escape(experiences);
-  if (id) {
-    sql = `update resumeex set companyName='${companyName}', timeList='${timeList}', salary='${salary}', experience='${experience}' where id='${id}';`;
-  } else {
-    sql = `insert into resumeex(companyName, timeList, salary,experience) values ('${companyName}', '${timeList}', '${salary}', '${experience}')`;
-  }
-  return exec(sql)
-    .then((data) => data)
-    .catch((err) => err);
-};
-
+const updateResumeEx = ({ id, key, val, str }) => {
+	let sql = ''
+	if (id) {
+		sql = `update resumeex set ${str} where id='${id}';`
+	} else {
+		sql = `insert into resumeex(${key}) values (${val});`
+	}
+	return exec(sql)
+}
 module.exports = {
   getResumeBase,
   getResumeEx,

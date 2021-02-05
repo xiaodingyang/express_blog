@@ -46,14 +46,11 @@ const isRepeat = (username) => {
 
 /* 新增用户 */
 const newUser = ({ id, key, val, str }) => {
-	key += `,createdTime`
-	val += `,${dateFormat({ format: 'YYYY-MM-dd hh:mm:ss' })}`
-	str += `,createdTime="${dateFormat({ format: 'YYYY-MM-dd hh:mm:ss' })}"`
 	let sql = ''
 	if (id) {
-		sql = `update users set ${str.slice(1)} where id='${id}';`
+		sql = `update users set ${str} where id='${id}';`
 	} else {
-		sql = `insert into users(${key.slice(1)}) values (${val.slice(1)});`
+		sql = `insert into users(${key}) values (${val});`
 	}
 	return exec(sql)
 }

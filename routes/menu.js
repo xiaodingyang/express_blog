@@ -23,12 +23,7 @@ router.get('/tree', function (req, res, next) {
 })
 /* 更新菜单 */
 router.post('/save', function (req, res, next) {
-	updateFun(newMenu, req, res, (data) => {
-		for (const key in data) {
-			
-		}
-		return data
-	})
+	updateFun(newMenu, req, res)
 })
 
 /* 删除菜单 */

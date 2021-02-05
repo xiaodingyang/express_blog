@@ -30,12 +30,12 @@ const getMenu = ({ label }) => {
 };
 
 /* 更新菜单 */
-const newMenu = (key,val,str) => {
+const newMenu = ({id,key,val,str}) => {
   let sql = "";
   if (id) {
-    sql = `update menu set ${str.slice(1)} where id='${id}';`;
+    sql = `update menu set ${str} where id='${id}';`;
   } else {
-    sql = `insert into menu(${key.slice(1)}) values (${val.slice(1)});`;
+    sql = `insert into menu(${key}) values (${val});`;
   }
   return exec(sql);
 };

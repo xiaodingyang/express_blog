@@ -16,7 +16,7 @@ const { getStrToObj, setObjToStr } = require("../utils/index");
 router.get("/base/list", function (req, res, next) {
   getListFun(getResumeBase, req, res, (data) => {
     data = data.forEach((item) => {
-      item.skillList = getStrToObj(item.skillList);
+      item.skillList = JSON.parse(unescape(item.skillList));
     });
   });
 });
@@ -24,8 +24,8 @@ router.get("/base/list", function (req, res, next) {
 router.post("/base/save", function (req, res, next) {
   updateFun(updateResumeBase, req, res, (data) => {
     for (const key in data) {
-      if (key === "skillLists") {
-        data.skillLists = setObjToStr(data.skillLists);
+      if (key === "skillList") {
+        data.skillList = escape(JSON.stringify(data.skillList));
       } else {
         data[key] = xss(data[key]);
       }
@@ -43,21 +43,16 @@ router.post("/base/delete", function (req, res, next) {
 router.get("/experience/list", function (req, res, next) {
   getListFun(getResumeEx, req, res, (data) => {
     data.forEach((item) => {
-      item.experience = getStrToObj(unescape(item.experience));
-      item.timeList = item.timeList.split(",");
+      item.experience = JSON.parse(unescape(item.experience));
+      item.timeList = JSON.parse(unescape(item.timeList))
     });
   });
 });
 // 更新经验
 router.post("/experience/save", function (req, res, next) {
   updateFun(updateResumeEx, req, res, (data) => {
-    for (const key in data) {
-      if (key === "experiences") {
-        data.experiences = setObjToStr(data.experiences);
-      } else {
-        data[key] = xss(data[key]);
-      }
-    }
+    if(data.experience)data.experience = escape(JSON.stringify(data.experience))
+    if(data.timeList)data.timeList = escape(JSON.stringify(data.timeList))
     return data;
   });
 });

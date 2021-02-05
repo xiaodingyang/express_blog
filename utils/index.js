@@ -70,14 +70,10 @@ function getListFun(func, req, res, dataRest) {
 function updateFun(func, req, res, dataRest) {
 	if (dataRest) {
 		req.body = dataRest(req.body)
-	} else {
-		for (const key in req.body) {
-			req.body[key] = xss(req.body[key])
-		}
-	}
+	} 
 	let key = '',
 		val = '',
-		str = ''
+        str = ''
 	for (const k in req.body) {
 		if (k === 'password') req.body[k] = getPassword(req.body[k])
 		if (req.body[k] !== 'undefined') {
@@ -86,7 +82,12 @@ function updateFun(func, req, res, dataRest) {
 			str += `,${k}="${req.body[k]}"`
 		}
 	}
-	func({ id: req.body.id, key, val, str })
+	func({
+		id: req.body.id,
+		key: key.slice(1),
+		val: val.slice(1),
+		str: str.slice(1),
+	})
 		.then((data) => {
 			if (data) {
 				res.json(new resModels({ status: true, message: 'OK！' }))
