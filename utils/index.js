@@ -38,6 +38,7 @@ function getListFun(func, req, res, dataRest) {
 	for (const key in req.query) {
 		req.query[key] = xss(req.query[key])
 	}
+    
 	func(req.query)
 		.then((data) => {
 			if (data) {
@@ -47,7 +48,7 @@ function getListFun(func, req, res, dataRest) {
 						data: {
 							list: data.data,
 							total: data.total,
-							currentPage: data.currentPage,
+							curPage: data.curPage,
 							pageSize: data.pageSize,
 						},
 						status: true,

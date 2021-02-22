@@ -2,7 +2,7 @@ const { exec, setSql,setNoPageSql } = require("../db/mysql");
 
 /* 获取菜单列表 */
 // 分页
-const getMenuList = ({ name, label, currentPage=1, pageSize=10 }) => {
+const getMenuList = ({ name, label, curPage=1, pageSize=10 }) => {
   const params = {
     name: "menu",
     likeSearch: {
@@ -11,10 +11,9 @@ const getMenuList = ({ name, label, currentPage=1, pageSize=10 }) => {
     },
     order:'asc',
     orderKey:'sort',
-    currentPage,
-    pageSize,
+    
   };
-  return setSql(params);
+  return setNoPageSql(params);
 };
 // 不分页
 const getMenu = ({ label }) => {

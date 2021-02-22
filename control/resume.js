@@ -1,12 +1,12 @@
 const { exec, setSql } = require("../db/mysql");
 
 /* 获取基础简历 */
-const getResumeBase = ({ currentPage, pageSize }) => {
+const getResumeBase = ({ curPage, pageSize }) => {
   const params = {
     name: "resumebase",
     search: {},
     likeSearch: {},
-    currentPage,
+    curPage,
     pageSize,
   };
   return setSql(params);
@@ -31,12 +31,12 @@ const updateResumeBase = ({ id, key, val, str }) => {
 
 
 /* 获取经验 */
-const getResumeEx = ({ companyName, currentPage, pageSize }) => {
+const getResumeEx = ({ companyName, curPage, pageSize }) => {
   const params = {
     name: "resumeex",
     search: {},
     likeSearch: { companyName },
-    currentPage,
+    curPage,
     pageSize,
   };
   return setSql(params);

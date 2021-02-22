@@ -16,26 +16,10 @@ router.get("/list", function (req, res, next) {
   getListFun(getList, req, res);
 });
 
-// 新建分类
-router.post("/new", function (req, res, next) {
-  for (const key in req.body) {
-    req.body[key] = xss(req.body[key]);
-  }
-  newClass(req.body)
-    .then((data) => {
-      res.json(new ResModels({ data, status: true, message: "OK!" }));
-    })
-    .catch((err) =>
-      res.json(
-        new ResModels({ data: [], message: "参数不匹配！", status: false })
-      )
-    );
-});
-
-// 更新分类
-router.post("/update", function (req, res, next) {
-  updateFun(updateClass, req, res);
-});
+/* 更新分类 */
+router.post('/save', function (req, res, next) {
+	updateFun(newClass, req, res)
+})
 
 // 删除分类
 router.post("/delete", function (req, res, next) {

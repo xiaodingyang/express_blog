@@ -1,26 +1,19 @@
-const { exec, setSql } = require("../db/mysql");
-const getList = ({ name, currentPage, pageSize }) => {
+const { exec, setNoPageSql } = require("../db/mysql");
+const getList = ({ name, curPage, pageSize }) => {
   const params = {
     name: "blogsclass",
-    likeSearch: {
-      name,
-    },
-    currentPage,
-    pageSize,
   };
-  return setSql(params);
+  return setNoPageSql(params);
 };
 
-const newClass = ({ code, name }) => {
-  let sql = `insert into blogsclass(code, name) values ('${code}', '${name}')`;
+const newClass = ({id,key,val,str}) => {
+  let sql = "";
+  if (id) {
+    sql = `update blogsclass set ${str} where id='${id}';`;
+  } else {
+    sql = `insert into blogsclass(${key}) values (${val});`;
+  }
   return exec(sql);
-};
-
-const updateClass = ({ code, name, id }) => {
-  let sql = `update blogsclass set code='${code}', name='${name}' where id='${id}'`;
-  return exec(sql).then((data) => {
-    return data.affectedRows;
-  });
 };
 
 const deleteClass = (id = "") => {
@@ -33,6 +26,5 @@ const deleteClass = (id = "") => {
 module.exports = {
   getList,
   newClass,
-  updateClass,
   deleteClass,
 };

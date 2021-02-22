@@ -18,7 +18,22 @@ router.get("/list", function (req, res, next) {
   getListFun(getList, req, res, (data) => {
     data = data.map((item) => {
       for (const key in item) {
-        if (key === "imgList") item[key] = getStrToObj(item[key]);
+        if (key === "imgList") {
+            if(item[key]&&item[key]!=='null'){
+                const arr = item[key].split(',')
+                item[key] = arr.map(item=>{
+                    try {
+                        return JSON.parse(unescape(item))
+                    } catch (error) {
+                        
+                    }
+                    
+                })
+            }else{
+                item[key] = []
+            }
+            
+        }
       }
       return item;
     });
@@ -29,7 +44,7 @@ router.get("/list", function (req, res, next) {
 router.post("/save", function (req, res, next) {
   updateFun(newImgs, req, res, (data) => {
     for (const key in data) {
-      if (key === "imgList") data[key] = setObjToStr(data[key]);
+      if (key === "imgList") data[key] = data.imgList.map(item=>escape(JSON.stringify(item)));
     }
     return data;
   });

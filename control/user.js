@@ -20,7 +20,7 @@ const getUserInfo = ({
 	username,
 	realname,
 	auth,
-	currentPage = 1,
+	curPage = 1,
 	pageSize = 10,
 }) => {
 	const params = {
@@ -32,7 +32,7 @@ const getUserInfo = ({
 			username,
 			realname,
 		},
-		currentPage,
+		curPage,
 		pageSize,
 	}
 	return setSql(params)

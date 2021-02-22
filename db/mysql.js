@@ -22,14 +22,14 @@ function exec(sql) {
 	})
 }
 
-function page({ dataSql, pageSql, currentPage, pageSize }) {
+function page({ dataSql, pageSql, curPage, pageSize }) {
 	return exec(pageSql).then((data) => {
 		const total = data[0] ? data[0]['count(1)'] : 0
 		return exec(dataSql).then((data) => {
 			return {
 				data: data,
 				total: parseInt(total),
-				currentPage: parseInt(currentPage),
+				curPage: parseInt(curPage),
 				pageSize: parseInt(pageSize),
 			}
 		})
@@ -43,7 +43,7 @@ function setSql({
 	likeSearch,
 	orderKey,
 	order,
-	currentPage,
+	curPage,
 	pageSize,
 }) {
 	let dataSql = `select * from ${name}  where 1=1 `
@@ -63,10 +63,10 @@ function setSql({
 	if (orderKey) {
 		str += ` order by ${orderKey} ${order || 'desc'} `
 	}
-	if (currentPage && pageSize)
-		str += 'limit ' + pageSize + ' offset ' + (currentPage - 1) * pageSize
+	if (curPage && pageSize)
+		str += 'limit ' + pageSize + ' offset ' + (curPage - 1) * pageSize
     dataSql += str
-	return page({ dataSql, pageSql, currentPage, pageSize })
+	return page({ dataSql, pageSql, curPage, pageSize })
 }
 
 // 不分页查询
