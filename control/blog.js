@@ -22,7 +22,7 @@ const getList = ({
       author,
       content,
     },
-    orderKey: "createdTime",
+    orderKey: "updateTime",
     order,
     curPage,
     pageSize,
