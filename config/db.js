@@ -11,7 +11,7 @@ if (env === "development") {
     user: "root",
     password: "2691716451Yang",
     port: "3306",
-    database: "myBlog",
+    database: "myblog",
   };
   // reids 配置
   REDIS_CONFIG = {
@@ -25,7 +25,7 @@ if (env === "development") {
     user: "root",
     password: "2691716451Yang",
     port: "3306",
-    database: "myBlog",
+    database: "myblog",
   };
   // reids 配置
   REDIS_CONFIG = {
